@@ -1,7 +1,9 @@
-This project implements the Android Pattern Lock feature.
+This project implements the Android Pattern Lock feature using React & Redux.
+
 It's an app with 2 functional screens: 
 - one screen where the user can set the pattern, and 
 - another where the user can validate if the input matches the set pattern.
+
 If the user enters the correct pattern, a message will be displayed for getting authenticated successfully.
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
