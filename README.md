@@ -11,7 +11,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Available Scripts
 
 - Clone/Download 
-- Go to that folder from the terminal and run the command: ### `npm install`
+- Go to that directory from the terminal and run the command: `npm install`
 
 In the project directory, you can run:
 
