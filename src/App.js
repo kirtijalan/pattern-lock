@@ -3,14 +3,14 @@ import { connect } from "react-redux";
 import { setLockPattern } from "./actions/setPatternAction";
 import { validatePattern } from "./actions/validatePatternAction";
 import './App.css';
+import './_style/patternlock.css';
+import './_script/patternlock.js';
 import { readCookie } from './utils/cookie';
 
 class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      code : "",
-      confirmCode: "",
       showNextPage: false,
       errorMsg: "",
       auth: false
@@ -19,15 +19,11 @@ class App extends Component {
     this.validateCode = this.validateCode.bind(this);    
   }
 
-  setCodetoProceed = (e) => {
-    this.setState({
-      "code" : e.target.value
-    })
-  }
-
   handleSubmit(event){
     event.preventDefault();
-    this.props.setLockPattern(this.state.code, () => {
+    let pwdSet = readCookie("pwd");
+    alert("You entered " + pwdSet);
+    this.props.setLockPattern(pwdSet, () => {
       let codeValueSet = readCookie("code");
       if(this.props.codeSet === true || codeValueSet ){  
         this.setState({
@@ -44,7 +40,9 @@ class App extends Component {
   to validate the entered code*/
   validateCode(event){
     event.preventDefault();
-    this.props.validatePattern(this.state.confirmCode, () => {
+    let confirmPwd = readCookie("confPwd");
+    alert("Confirmation Password" + confirmPwd);
+    this.props.validatePattern(confirmPwd, () => {
       if(this.props.success === true || readCookie('A') ){  
         console.log("pattern validated");
         this.setState({
@@ -65,35 +63,28 @@ class App extends Component {
         <div className="App">
           <header> 
             <h1> Android Pattern Locker </h1>
-            <img src="unlocking.gif" alt="unlocking"/>
           </header>
           <p className="App-intro">
-          Enter code to proceed: </p>
-          <form name = "code-form" 
+          Enter previously set code to proceed: </p>
+          <form name = "confirm-code-form" 
             onSubmit={this.validateCode}>
-          <input  
-            type="text" 
-            name="code" 
-            autoFocus = {true}
-            value = {this.state.confirmCode}
-            onChange={(e) => {
-              this.setState({
-                confirmCode: e.target.value
-              })
-            }}
-          />
-          {this.state.errorMsg? <p> {this.state.errorMsg} </p> : null}
-          <div>
-            <input type="submit" name="submit" value="UNLOCK" />
-          </div>
+            <div>
+              <input type="password" id="password2" name="conf-password" className="patternlock" />
+            </div>
+            {this.state.errorMsg? <p> {this.state.errorMsg} </p> : null}
+            <div>
+              <input type="submit" name="btnSubmit" value="UNLOCK" className="sbmt-btn" />
+            </div>
           </form>
         </div>
       );
     }else if(this.state.auth){
       return(
         <div className="App"> 
-          <header> Android Pattern Locker  </header>
-          Authenticated!
+          <header> 
+            <h1> Android Pattern Locker </h1>
+          </header>
+          Welcome, Authenticated User!
         </div>
       )
     }
@@ -102,25 +93,18 @@ class App extends Component {
         <div className="App">
           <header> 
             <h1> Android Pattern Locker </h1>
-            {/* <img src="./assets/unlocking.gif" alt="unlocking"/> */}
           </header>
           <p className="App-intro">
           Enter your code: </p>
           <form name = "code-form" 
             onSubmit={this.handleSubmit}>
-          <input  
-            type="text" 
-            name="code" 
-            autoFocus = {true}
-            value = {this.state.code}
-            onChange={(e) => {
-              this.setCodetoProceed(e)
-            }}
-          />
-          {this.state.errorMsg? <p> {this.state.errorMsg} </p> : null}
-          <div>
-            <input type="submit" name="submit" value="SET MY CODE" />
-          </div>
+            <div>
+              <input type="password" id="password" name="password" className="patternlock" />
+            </div>
+            {this.state.errorMsg? <p> {this.state.errorMsg} </p> : null}
+            <div>
+              <input type="submit" name="btnSubmit" value="SET MY CODE" className="sbmt-btn"/>
+            </div>
           </form>
         </div>
       );
