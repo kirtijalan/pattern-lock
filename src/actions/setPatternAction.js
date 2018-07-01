@@ -1,9 +1,10 @@
 import * as types from './actionTypes';
+import { createCookie, eraseCookie } from './../utils/cookie';
 
 function setLockPatternResponse(info){
     return {
       type: types.SET_LOCK_PATTERN,
-      success: info.success
+      codeSet: info.codeSet
     }
   }
   
@@ -11,10 +12,12 @@ function setLockPatternResponse(info){
 export function setLockPattern(data, callback) {
     return function (dispatch) {
         if(data){
-            dispatch(setLockPatternResponse({success: true}));
+            createCookie("code", data, 730);
+            dispatch(setLockPatternResponse({codeSet: true}));
             callback();
         }
         else{
+            eraseCookie("code");
             dispatch(setLockPatternResponse({success: false}));
             callback(); 
         }  

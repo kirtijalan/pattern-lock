@@ -6,12 +6,14 @@ export default function pattern(state = initialState.pattern, action){
     switch (action.type){
         case SET_LOCK_PATTERN:
             console.log('set_lock');
-            let { success = false } = action;
-            let newState = {...state, success };
+            let { codeSet = false } = action;
+            let newState = {...state, codeSet };
             return newState;
         case VALIDATE_PATTERN:
             console.log('validate pattern');
-            return action;
+            let { success = false } = action;
+            let updatedState = {...state, success };
+            return updatedState;
         default:
             return state;
     }

@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { setLockPattern } from "./actions/setPatternAction";
-// import logo from './logo.svg';
+import { validatePattern } from "./actions/validatePatternAction";
 import './App.css';
+import { readCookie } from './utils/cookie';
 
 class App extends Component {
   constructor(props){
     super(props);
     this.state = {
       code : "",
+      confirmCode: "",
       showNextPage: false,
-      errorMsg: ""
+      errorMsg: "",
+      auth: false
     }
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.validateCode = this.validateCode.bind(this);    
   }
 
   setCodetoProceed = (e) => {
@@ -20,13 +25,14 @@ class App extends Component {
     })
   }
 
-  handleSubmit = (event) => {
+  handleSubmit(event){
     event.preventDefault();
     this.props.setLockPattern(this.state.code, () => {
-      if(this.props.setPatternStatus === true){  
-        console.log("pattern created");
+      let codeValueSet = readCookie("code");
+      if(this.props.codeSet === true || codeValueSet ){  
         this.setState({
-          showNextPage: true
+          showNextPage: true,
+          errorMsg: ""
         })
       }
       else{
@@ -34,42 +40,101 @@ class App extends Component {
       }
     });
   }
+  /*function to that dispatches the action 
+  to validate the entered code*/
+  validateCode(event){
+    event.preventDefault();
+    this.props.validatePattern(this.state.confirmCode, () => {
+      if(this.props.success === true || readCookie('A') ){  
+        console.log("pattern validated");
+        this.setState({
+          showNextPage: false,
+          auth: true,
+          errorMsg: ""
+        })
+      }
+      else{
+        this.setState({errorMsg: "Incorrect Pattern"})
+      }
+    });
+  }
 
   render() {
-    return (
-      <div className="App">
-        {/*<header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>*/}
-        <p className="App-intro">
-         Enter your code: </p>
-        <form name = "code-form" 
-          onSubmit={(e) => {this.handleSubmit(e)}}>
-        <input  
-          type="text" 
-          name="code" 
-          autoFocus = {true}
-          value = {this.state.code}
-          onChange={(e) => {
-            this.setCodetoProceed(e)
-          }}
-        />
-        <div>
-          <input type="submit" name="submit" value="SET MY CODE" />
+    if(this.state.showNextPage){
+      return (
+        <div className="App">
+          <header> 
+            <h1> Android Pattern Locker </h1>
+            <img src="unlocking.gif" alt="unlocking"/>
+          </header>
+          <p className="App-intro">
+          Enter code to proceed: </p>
+          <form name = "code-form" 
+            onSubmit={this.validateCode}>
+          <input  
+            type="text" 
+            name="code" 
+            autoFocus = {true}
+            value = {this.state.confirmCode}
+            onChange={(e) => {
+              this.setState({
+                confirmCode: e.target.value
+              })
+            }}
+          />
+          {this.state.errorMsg? <p> {this.state.errorMsg} </p> : null}
+          <div>
+            <input type="submit" name="submit" value="UNLOCK" />
+          </div>
+          </form>
         </div>
-        </form>
-      </div>
-    );
+      );
+    }else if(this.state.auth){
+      return(
+        <div className="App"> 
+          <header> Android Pattern Locker  </header>
+          Authenticated!
+        </div>
+      )
+    }
+    else{
+      return (
+        <div className="App">
+          <header> 
+            <h1> Android Pattern Locker </h1>
+            {/* <img src="./assets/unlocking.gif" alt="unlocking"/> */}
+          </header>
+          <p className="App-intro">
+          Enter your code: </p>
+          <form name = "code-form" 
+            onSubmit={this.handleSubmit}>
+          <input  
+            type="text" 
+            name="code" 
+            autoFocus = {true}
+            value = {this.state.code}
+            onChange={(e) => {
+              this.setCodetoProceed(e)
+            }}
+          />
+          {this.state.errorMsg? <p> {this.state.errorMsg} </p> : null}
+          <div>
+            <input type="submit" name="submit" value="SET MY CODE" />
+          </div>
+          </form>
+        </div>
+      );
+    }
   }
 }
 
 
 const mapStateToProps = (state, ownProps) => {
   const { pattern = {} } = state;
-  const { success = false } = pattern;
+  const { codeSet = false, success = false } = pattern;
   return{
-    setPatternStatus: success
+    codeSet,
+    success
   };
 }
 
@@ -77,6 +142,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setLockPattern: (formData, callback) => {
       dispatch(setLockPattern(formData, callback));
+    },
+    validatePattern: (formData, callback) => {
+      dispatch(validatePattern(formData, callback));
     }
   };
 }
