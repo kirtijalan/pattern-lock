@@ -7,7 +7,11 @@ It's an app with 2 functional screens:
 If the user enters the correct pattern, a message will be displayed for getting authenticated successfully.
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+
 ## Available Scripts
+
+- Clone/Download 
+- Go to that folder from the terminal and run the command: ### `npm install`
 
 In the project directory, you can run:
 
